@@ -55,4 +55,9 @@ stepFunctions:
             Resource:
               Fn::GetAtt: [square,Arn]
             End: true
+            Retry:
+              - ErrorEquals: [NumberIsTooBig]
+                MaxAttempts: 0
+              - ErrorEquals: [States.ALL]
+                MaxAttempts: 3
             
