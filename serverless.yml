@@ -1,0 +1,58 @@
+service: aws-sfn-handson
+
+frameworkVersion: '2'
+
+plugins:
+  - serverless-step-functions
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  region: ap-southeast-1
+
+
+functions:
+  hello:
+    handler: handler.hello
+  add:
+    handler: handler.add
+  double:
+    handler: handler.double
+  square:
+    handler: handler.square
+
+stepFunctions:
+  stateMachines:
+    hello:
+      name: hello
+      definition:
+        Comment: The great hello world
+        StartAt: Hello
+        States:
+          Hello:
+            Type: Task
+            Resource: 
+              Fn::GetAtt: [hello,Arn]
+            End: true
+    method-chaining-math:
+      name: method-chaining-math
+      definition:
+        Comment: Example to demonstrate function chaining using SFN
+        StartAt: Add
+        States:
+          Add:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [add,Arn]
+            Next: Double
+          Double:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [double,Arn]
+            Next: Square
+          Square:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [square,Arn]
+            End: true
+            
