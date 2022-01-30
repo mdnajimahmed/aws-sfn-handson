@@ -172,3 +172,45 @@ stepFunctions:
             Type: Pass
             InputPath: $[0]
             End: True
+    map-simple:
+      name: map-simple
+      definition:
+        StartAt: "SimpleMap"
+        States:
+          SimpleMap:
+            Type: Map
+            End: true
+            # MaxConcurrency: 1
+            Iterator:
+              StartAt: DynamicWait
+              States:
+                DynamicWait:
+                  Type: Wait
+                  SecondsPath: $.delay
+                  Next: PassWait
+                PassWait:
+                  Type: Pass
+                  InputPath: $.delay
+                  End: True 
+    map-advanced:
+      name: map-advanced
+      definition:
+        StartAt: "AdvancedMap"
+        States:
+          AdvancedMap:
+            Type: Map
+            End: true
+            # MaxConcurrency: 1
+            ItemsPath: $.inputs
+            Parameters:
+              delay.$ : $$.Map.Item.Value
+              executionId.$: $$.Execution.Id
+              groupId.$: $.groupdId
+            Iterator:
+              StartAt: DynamicWait
+              States:
+                DynamicWait:
+                  Type: Wait
+                  SecondsPath: $.delay
+                  End : true
+                
