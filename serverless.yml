@@ -60,4 +60,11 @@ stepFunctions:
                 MaxAttempts: 0
               - ErrorEquals: [States.ALL]
                 MaxAttempts: 3
-            
+            Catch:
+              - ErrorEquals: [NumberIsTooBig]
+                Next: NumberIsTooBigDefaultResponse
+          NumberIsTooBigDefaultResponse:
+            Type: Pass
+            Result: -1
+            End: True
+
