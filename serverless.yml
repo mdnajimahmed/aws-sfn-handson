@@ -145,4 +145,30 @@ stepFunctions:
             Resource: 
               Fn::GetAtt: [finalize,Arn]
             End: true
-
+    all-about-pass:
+      name: all-about-pass
+      definition:
+        StartAt: ParallelPath
+        States:
+          ParallelPath: 
+            Type: Parallel 
+            Branches:
+              - StartAt: AddZ
+                States:
+                  AddZ:
+                    Type: Pass
+                    Result: 42
+                    ResultPath: $.z
+                    End: true
+              - StartAt: OverrideX
+                States:
+                  OverrideX:
+                    Type: Pass
+                    Result: 42
+                    ResultPath: $.x
+                    End: true
+            Next: FinalizePath
+          FinalizePath:
+            Type: Pass
+            InputPath: $[0]
+            End: True
