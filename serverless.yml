@@ -20,6 +20,14 @@ functions:
     handler: handler.double
   square:
     handler: handler.square
+  bigSquare:
+    handler: handler.bigSquare
+  finalize:
+    handler: handler.finalize
+  fetchUsers:
+    handler: handler.fetchUsers
+  fetchTodos:
+    handler: handler.fetchTodos
 
 stepFunctions:
   stateMachines:
@@ -49,7 +57,14 @@ stepFunctions:
             Type: Task
             Resource:
               Fn::GetAtt: [double,Arn]
-            Next: Square
+            Next: IsBigNumber
+          IsBigNumber:
+            Type: Choice
+            Choices: 
+              - Variable: $
+                NumericGreaterThan: 50
+                Next: BigSquare
+            Default: Square
           Square:
             Type: Task
             Resource:
@@ -63,8 +78,71 @@ stepFunctions:
             Catch:
               - ErrorEquals: [NumberIsTooBig]
                 Next: NumberIsTooBigDefaultResponse
+          BigSquare:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [bigSquare,Arn]
+            End: true
           NumberIsTooBigDefaultResponse:
             Type: Pass
             Result: -1
             End: True
+    parallel-poc:
+      name: parallel-poc
+      definition:
+        Comment: A Hello World example of the Amazon States Language using Pass states
+        StartAt: InitializeInParallel
+        States:
+          InitializeInParallel:
+            Type: Parallel
+            Branches:
+            - StartAt: Add
+              States:
+                Add:
+                  Type: Task
+                  Resource: 
+                    Fn::GetAtt: [add,Arn]
+                  Next: Double
+                Double:
+                  Type: Task
+                  Resource: 
+                    Fn::GetAtt: [double,Arn]
+                  Next: Square
+                Square:
+                  Type: Task
+                  Resource: 
+                    Fn::GetAtt: [square,Arn]
+                  End: true
+            - StartAt: NestedParallel
+              States:
+                NestedParallel:
+                  Type: Parallel
+                  Branches:
+                  - StartAt: FetchUser
+                    States:
+                      FetchUser:
+                        Type: Task
+                        Resource: 
+                          Fn::GetAtt: [fetchUsers,Arn]
+                        End: true
+                  - StartAt: FetchTodo
+                    States:
+                      FetchTodo:
+                        Type: Task
+                        Resource: 
+                          Fn::GetAtt: [fetchTodos,Arn]
+                        End: true
+                  End: true
+            - StartAt: Wait5Seconds
+              States:
+                Wait5Seconds:
+                  Type: Wait
+                  Seconds: 5
+                  End: true
+            Next: ThenFinalize
+          ThenFinalize:
+            Type: Task
+            Resource: 
+              Fn::GetAtt: [finalize,Arn]
+            End: true
 

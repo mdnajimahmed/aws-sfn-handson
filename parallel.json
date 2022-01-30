@@ -1,0 +1,78 @@
+{
+    "Comment": "A Hello World example of the Amazon States Language using Pass states",
+    "StartAt": "InitializeInParallel",
+    "States": {
+      "InitializeInParallel": {
+        "Type": "Parallel",
+        "Branches": [
+          {
+            "StartAt":"Add",
+            "States":{
+              "Add":{
+                "Type": "Task",
+                "Resource":"arn:aws:lambda:ap-southeast-1:135129372575:function:aws-sfn-handson-dev-add",
+                "Next":"Double"
+              },
+              "Double":{
+                "Type": "Task",
+                "Resource":"arn:aws:lambda:ap-southeast-1:135129372575:function:aws-sfn-handson-dev-double",
+                "Next":"Square"
+              },
+              "Square":{
+                "Type": "Task",
+                "Resource":"arn:aws:lambda:ap-southeast-1:135129372575:function:aws-sfn-handson-dev-square",
+                "End":true
+              }
+            }
+          },
+          {
+            "StartAt":"NestedParallel",
+            "States":{
+              "NestedParallel":{
+                "Type":"Parallel",
+                "Branches":[
+                  {
+                    "StratAt":"FetchUser",
+                    "States":{
+                      "FetchUser":{
+                        "Type":"Task",
+                        "Resource":"arn:aws:lambda:ap-southeast-1:135129372575:function:aws-sfn-handson-dev-fetchUsers",
+                        "End":true
+                      }
+                    }
+                  },
+                  {
+                    "StratAt":"FetchTodo",
+                    "States":{
+                      "FetchTodo":{
+                        "Type":"Task",
+                        "Resource":"arn:aws:lambda:ap-southeast-1:135129372575:function:aws-sfn-handson-dev-fetchTodos",
+                        "End":true
+                      }
+                    }
+                  }
+                ],
+                "End":true
+              }
+            }
+          },
+          {
+            "StartAt":"Wait5Seconds",
+            "States":{
+              "Wait5Seconds":{
+                "Type":"Wait",
+                "Seconds":5,
+                "End":true
+              }
+            }
+          }
+        ],
+        "Next": "ThenFinalize"
+      },
+      "ThenFinalize":{
+        "Type": "Task",
+        "Resource":"arn:aws:lambda:ap-southeast-1:135129372575:function:aws-sfn-handson-dev-finalize",
+        "End":true
+      }
+    }
+  }

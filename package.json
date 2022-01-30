@@ -18,5 +18,8 @@
   "homepage": "https://github.com/mdnajimahmed/aws-sfn-handson#readme",
   "devDependencies": {
     "serverless-step-functions": "^3.5.1"
+  },
+  "dependencies": {
+    "axios": "^0.25.0"
   }
 }
