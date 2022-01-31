@@ -30,7 +30,8 @@ functions:
     handler: handler.fetchTodos
   apiGatewayTrigger:
     handler: handler.apiGatewayTrigger
-    
+  s3FileUploadTrigger:
+    handler: handler.s3FileUploadTrigger
 
 stepFunctions:
   stateMachines:
@@ -230,6 +231,30 @@ stepFunctions:
             Resource:
               Fn::GetAtt: [apiGatewayTrigger, Arn]
             End: true
-
+    s3-file-upload-trigger:
+      name: s3-file-upload-trigger
+      events:
+        - cloudwatchEvent:
+            event:
+              source:
+                - aws.s3
+              detail-type:
+                - AWS S3 file upload SFN trigger
+              detail:
+                eventSource:
+                  - s3.amazonaws.com
+                eventName:
+                  - PutObject
+                requestParameters:
+                  bucketName: 
+                    - ts-dev-ass-practice-bucket
+      definition: 
+        StartAt: S3PutObjectTrigger
+        States:
+          S3PutObjectTrigger:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [s3FileUploadTrigger, Arn]
+            End: true
            
                 

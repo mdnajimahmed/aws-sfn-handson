@@ -53,3 +53,8 @@ module.exports.apiGatewayTrigger = async (event) => {
   console.log("event",event)
   return event
 };
+module.exports.s3FileUploadTrigger = async (event) => { 
+  console.log("event",event)
+  return event
+};
+
