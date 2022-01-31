@@ -36,15 +36,20 @@ module.exports.finalize = async (input) => { // what object returned by the prev
   return input
 };
 
-module.exports.fetchUsers = async ({userId}) => { // what object returned by the previous object
+module.exports.fetchUsers = async ({userId}) => {
   
   const response = await axios.get(`https://jsonplaceholder.typicode.com/users/${userId}`)
   console.log("response",response,typeof response)
   return response.data
 };
 
-module.exports.fetchTodos = async ({userId}) => { // what object returned by the previous object
+module.exports.fetchTodos = async ({userId}) => { 
   const response = await axios.get(`https://jsonplaceholder.typicode.com/users/${userId}/todos`)
   console.log("response",response,typeof response)
   return response.data
+};
+
+module.exports.apiGatewayTrigger = async (event) => { 
+  console.log("event",event)
+  return event
 };

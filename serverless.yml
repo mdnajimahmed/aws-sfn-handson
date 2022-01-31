@@ -28,6 +28,9 @@ functions:
     handler: handler.fetchUsers
   fetchTodos:
     handler: handler.fetchTodos
+  apiGatewayTrigger:
+    handler: handler.apiGatewayTrigger
+    
 
 stepFunctions:
   stateMachines:
@@ -213,4 +216,20 @@ stepFunctions:
                   Type: Wait
                   SecondsPath: $.delay
                   End : true
+    api-gateway-trigger:
+      name: api-gateway-trigger
+      events:
+        - http:
+            path: /agw-sfn
+            method: POST
+      definition: 
+        StartAt: ApiGateway
+        States:
+          ApiGateway:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [apiGatewayTrigger, Arn]
+            End: true
+
+           
                 
