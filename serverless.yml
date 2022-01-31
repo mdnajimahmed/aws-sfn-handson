@@ -239,7 +239,7 @@ stepFunctions:
               source:
                 - aws.s3
               detail-type:
-                - AWS S3 file upload SFN trigger
+                - AWS API Call via CloudTrail # This is abolsutely important!!! We can not change it, it's under type!
               detail:
                 eventSource:
                   - s3.amazonaws.com
@@ -249,8 +249,15 @@ stepFunctions:
                   bucketName: 
                     - ts-dev-ass-practice-bucket
       definition: 
-        StartAt: S3PutObjectTrigger
+        StartAt: TransformEvent
         States:
+          TransformEvent:
+            Type: Pass
+            Parameters: 
+              eventName.$ : $.detail.eventName
+              resources.$: $.detail.resources
+            ResultPath: $
+            Next: S3PutObjectTrigger
           S3PutObjectTrigger:
             Type: Task
             Resource:
