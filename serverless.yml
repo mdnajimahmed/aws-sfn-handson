@@ -284,6 +284,23 @@ stepFunctions:
             Type: Pass
             Result: Deployment complete!
             End: True
+    sns-interaction:
+      name: sns-interaction
+      definition:
+        StartAt: SNSPublishDynamic
+        States:
+          SNSPublishDynamic:
+            Type: Task
+            Resource: arn:aws:states:::sns:publish # VVI - special resource by SFN service for SNS
+            Parameters:
+              Message.$: $.message
+              TopicArn.$: $.snsTopic
+              MessageAttributes:
+                mamaMia:
+                  DataType: String
+                  StringValue.$: $.attributes.mamaMia
+            End: true
+
   activities:
     - po-approval
                 
