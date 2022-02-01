@@ -263,5 +263,27 @@ stepFunctions:
             Resource:
               Fn::GetAtt: [s3FileUploadTrigger, Arn]
             End: true
-           
+    human-interaction-using-activity:
+      name: human-interaction-using-activity
+      definition:
+        StartAt: CheckoutCode
+        States:
+          CheckoutCode:
+            Type: Pass
+            Result: Code checkout complete!
+            Next: BuildCode
+          BuildCode:
+            Type: Pass
+            Result: Code build complete!
+            Next: WaitForApproval
+          WaitForApproval:
+            Type: Task
+            Resource: arn:aws:states:${aws:region}:${aws:accountId}:activity:po-approval
+            Next: Deploy
+          Deploy:
+            Type: Pass
+            Result: Deployment complete!
+            End: True
+  activities:
+    - po-approval
                 
