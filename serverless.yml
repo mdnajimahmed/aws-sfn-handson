@@ -316,6 +316,18 @@ stepFunctions:
                   DataType: String
                   StringValue.$: $.attributes.mamaMia
             End: true
+    dynamodb-integration:
+      name: dynamodb-integration
+      definition:
+        StartAt: InsertIntoDynamoDB
+        States: 
+          InsertIntoDynamoDB:
+            Type: Task
+            Resource: arn:aws:states:::dynamodb:putItem
+            Parameters:
+              TableName: AuctionTable-dev
+              Item.$: $.item
+            End: True
   activities:
     - po-approval
                 
