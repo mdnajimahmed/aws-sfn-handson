@@ -327,7 +327,13 @@ stepFunctions:
             Parameters:
               TableName: AuctionTable-dev
               Item.$: $.item
-            End: True
+            ResultSelector:
+              output.$: $
+            ResultPath: $.output
+            Next: DisplayCustomResult
+          DisplayCustomResult:
+            Type: Pass
+            End: true
   activities:
     - po-approval
                 
