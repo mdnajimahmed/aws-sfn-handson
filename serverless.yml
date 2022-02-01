@@ -300,7 +300,22 @@ stepFunctions:
                   DataType: String
                   StringValue.$: $.attributes.mamaMia
             End: true
-
+    sqs-integration:
+      name: sqs-integration
+      definition:
+        StartAt: SQSPublishDynamic
+        States: 
+          SQSPublishDynamic:
+            Type: Task
+            Resource: arn:aws:states:::sqs:sendMessage # VVI - special resource by SFN service for SQS
+            Parameters:
+              MessageBody.$: $.messageBody
+              QueueUrl.$: $.queueUrl
+              MessageAttributes:
+                mamaMia:
+                  DataType: String
+                  StringValue.$: $.attributes.mamaMia
+            End: true
   activities:
     - po-approval
                 
