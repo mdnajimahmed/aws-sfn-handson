@@ -1,4 +1,6 @@
 const axios = require('axios');
+const AWS = require('aws-sdk')
+const SFN = new AWS.StepFunctions()
 
 class NumberIsTooBig extends Error{
   constructor(n){
@@ -58,3 +60,18 @@ module.exports.s3FileUploadTrigger = async (event) => {
   return event
 };
 
+module.exports.sqsListener = async (event) => { 
+  console.log('event',JSON.stringify(event))
+  const record = event.Records[0]
+  const body = JSON.parse(record.body)
+  console.log('body',body)
+
+  await SFN.sendTaskSuccess({
+    output: JSON.stringify({
+      "temperature":30.3,
+      "airPressure":100.7
+    }),
+    taskToken: body.Token
+  }).promise()
+  return event
+};
