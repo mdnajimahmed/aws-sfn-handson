@@ -1,6 +1,6 @@
 service: aws-sfn-handson
 
-frameworkVersion: '2'
+frameworkVersion: "2"
 
 plugins:
   - serverless-step-functions
@@ -12,8 +12,7 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action: states:SendTaskSuccess
-      Resource: '*'
-
+      Resource: "*"
 
 functions:
   hello:
@@ -39,9 +38,11 @@ functions:
   sqsListener:
     handler: handler.sqsListener
     events:
-      - sqs: 
+      - sqs:
           arn: arn:aws:sqs:ap-southeast-1:135129372575:MyTestQueue
           batchSize: 1
+  evaluationLambda:
+    handler: handler.evaluationLambda
 
 stepFunctions:
   stateMachines:
@@ -53,8 +54,8 @@ stepFunctions:
         States:
           Hello:
             Type: Task
-            Resource: 
-              Fn::GetAtt: [hello,Arn]
+            Resource:
+              Fn::GetAtt: [hello, Arn]
             End: true
     method-chaining-math:
       name: method-chaining-math
@@ -65,16 +66,16 @@ stepFunctions:
           Add:
             Type: Task
             Resource:
-              Fn::GetAtt: [add,Arn]
+              Fn::GetAtt: [add, Arn]
             Next: Double
           Double:
             Type: Task
             Resource:
-              Fn::GetAtt: [double,Arn]
+              Fn::GetAtt: [double, Arn]
             Next: IsBigNumber
           IsBigNumber:
             Type: Choice
-            Choices: 
+            Choices:
               - Variable: $
                 NumericGreaterThan: 50
                 Next: BigSquare
@@ -82,7 +83,7 @@ stepFunctions:
           Square:
             Type: Task
             Resource:
-              Fn::GetAtt: [square,Arn]
+              Fn::GetAtt: [square, Arn]
             End: true
             Retry:
               - ErrorEquals: [NumberIsTooBig]
@@ -95,7 +96,7 @@ stepFunctions:
           BigSquare:
             Type: Task
             Resource:
-              Fn::GetAtt: [bigSquare,Arn]
+              Fn::GetAtt: [bigSquare, Arn]
             End: true
           NumberIsTooBigDefaultResponse:
             Type: Pass
@@ -110,62 +111,62 @@ stepFunctions:
           InitializeInParallel:
             Type: Parallel
             Branches:
-            - StartAt: Add
-              States:
-                Add:
-                  Type: Task
-                  Resource: 
-                    Fn::GetAtt: [add,Arn]
-                  Next: Double
-                Double:
-                  Type: Task
-                  Resource: 
-                    Fn::GetAtt: [double,Arn]
-                  Next: Square
-                Square:
-                  Type: Task
-                  Resource: 
-                    Fn::GetAtt: [square,Arn]
-                  End: true
-            - StartAt: NestedParallel
-              States:
-                NestedParallel:
-                  Type: Parallel
-                  Branches:
-                  - StartAt: FetchUser
-                    States:
-                      FetchUser:
-                        Type: Task
-                        Resource: 
-                          Fn::GetAtt: [fetchUsers,Arn]
-                        End: true
-                  - StartAt: FetchTodo
-                    States:
-                      FetchTodo:
-                        Type: Task
-                        Resource: 
-                          Fn::GetAtt: [fetchTodos,Arn]
-                        End: true
-                  End: true
-            - StartAt: Wait5Seconds
-              States:
-                Wait5Seconds:
-                  Type: Wait
-                  Seconds: 5
-                  End: true
+              - StartAt: Add
+                States:
+                  Add:
+                    Type: Task
+                    Resource:
+                      Fn::GetAtt: [add, Arn]
+                    Next: Double
+                  Double:
+                    Type: Task
+                    Resource:
+                      Fn::GetAtt: [double, Arn]
+                    Next: Square
+                  Square:
+                    Type: Task
+                    Resource:
+                      Fn::GetAtt: [square, Arn]
+                    End: true
+              - StartAt: NestedParallel
+                States:
+                  NestedParallel:
+                    Type: Parallel
+                    Branches:
+                      - StartAt: FetchUser
+                        States:
+                          FetchUser:
+                            Type: Task
+                            Resource:
+                              Fn::GetAtt: [fetchUsers, Arn]
+                            End: true
+                      - StartAt: FetchTodo
+                        States:
+                          FetchTodo:
+                            Type: Task
+                            Resource:
+                              Fn::GetAtt: [fetchTodos, Arn]
+                            End: true
+                    End: true
+              - StartAt: Wait5Seconds
+                States:
+                  Wait5Seconds:
+                    Type: Wait
+                    Seconds: 5
+                    End: true
             Next: ThenFinalize
           ThenFinalize:
             Type: Task
-            Resource: 
-              Fn::GetAtt: [finalize,Arn]
+            Resource:
+              Fn::GetAtt: [finalize, Arn]
             End: true
     all-about-pass:
       name: all-about-pass
       definition:
         StartAt: ParallelPath
         States:
-          ParallelPath: 
-            Type: Parallel 
+          ParallelPath:
+            Type: Parallel
             Branches:
               - StartAt: AddZ
                 States:
@@ -205,7 +206,7 @@ stepFunctions:
                 PassWait:
                   Type: Pass
                   InputPath: $.delay
-                  End: True 
+                  End: True
     map-advanced:
       name: map-advanced
       definition:
@@ -217,7 +218,7 @@ stepFunctions:
             # MaxConcurrency: 1
             ItemsPath: $.inputs
             Parameters:
-              delay.$ : $$.Map.Item.Value
+              delay.$: $$.Map.Item.Value
               executionId.$: $$.Execution.Id
               groupId.$: $.groupdId
             Iterator:
@@ -226,14 +227,14 @@ stepFunctions:
                 DynamicWait:
                   Type: Wait
                   SecondsPath: $.delay
-                  End : true
+                  End: true
     api-gateway-trigger:
       name: api-gateway-trigger
       events:
         - http:
             path: /agw-sfn
             method: POST
-      definition: 
+      definition:
         StartAt: ApiGateway
         States:
           ApiGateway:
@@ -256,15 +257,15 @@ stepFunctions:
                 eventName:
                   - PutObject
                 requestParameters:
-                  bucketName: 
+                  bucketName:
                     - ts-dev-ass-practice-bucket
-      definition: 
+      definition:
         StartAt: TransformEvent
         States:
           TransformEvent:
             Type: Pass
-            Parameters: 
-              eventName.$ : $.detail.eventName
+            Parameters:
+              eventName.$: $.detail.eventName
               resources.$: $.detail.resources
             ResultPath: $
             Next: S3PutObjectTrigger
@@ -314,7 +315,7 @@ stepFunctions:
       name: sqs-integration
       definition:
         StartAt: SQSPublishDynamic
-        States: 
+        States:
           SQSPublishDynamic:
             Type: Task
             Resource: arn:aws:states:::sqs:sendMessage # VVI - special resource by SFN service for SQS
@@ -330,7 +331,7 @@ stepFunctions:
       name: dynamodb-integration
       definition:
         StartAt: InsertIntoDynamoDB
-        States: 
+        States:
           InsertIntoDynamoDB:
             Type: Task
             Resource: arn:aws:states:::dynamodb:putItem
@@ -348,7 +349,7 @@ stepFunctions:
       name: callback-pattern
       definition:
         StartAt: PublishMessageToSQSAndWait
-        States: 
+        States:
           PublishMessageToSQSAndWait:
             Type: Task
             Next: PrintCallbackResult
@@ -364,6 +365,32 @@ stepFunctions:
           PrintCallbackResult:
             Type: Pass
             End: true
+    blue-green:
+      name: blue-green
+      # useExactVersion: true # This will bind the sfn with a lambda by version.
+      definition:
+        StartAt: Wait
+        States:
+          Wait:
+            Type: Wait
+            Seconds: 3
+            # End: True
+            Next: InvokeLambda
+          InvokeLambda:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [evaluationLambda, Arn]
+            Next: Decide
+          Decide:
+            Type: Choice
+            Choices:
+              - Variable: $
+                StringEquals: Approved
+                Next: Success
+            Default: Failed
+          Success:
+            Type: Succeed
+          Failed:
+            Type: Fail
   activities:
     - po-approval
-                
