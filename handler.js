@@ -75,9 +75,6 @@ module.exports.sqsListener = async (event) => {
   const record = event.Records[0];
   const body = JSON.parse(record.body);
   console.log("body", body);
-
-  if (1 == 2) {
-  }
   await SFN.sendTaskSuccess({
     output: JSON.stringify({
       temperature: 30.3,
@@ -89,5 +86,6 @@ module.exports.sqsListener = async (event) => {
 };
 
 module.exports.evaluationLambda = async (event) => {
-  return "Approved";
+  // return "Approved";
+  return "ThumbsUp";
 };

@@ -361,20 +361,19 @@ stepFunctions:
                 ExecutionId.$: $$.Execution.Id
                 StateName.$: $$.State.Name
                 Token.$: $$.Task.Token
-                UserSessionId.$: $.userSessionId # Binding executiong id with user session id
+                UserSessionId.$: $.userSessionId # Binding executions id with user session id
           PrintCallbackResult:
             Type: Pass
             End: true
     blue-green:
       name: blue-green
-      # useExactVersion: true # This will bind the sfn with a lambda by version.
+      useExactVersion: true # This will bind the sfn with a lambda by version.
       definition:
         StartAt: Wait
         States:
           Wait:
             Type: Wait
-            Seconds: 300
-            # End: True
+            Seconds: 120
             Next: InvokeLambda
           InvokeLambda:
             Type: Task
@@ -385,7 +384,8 @@ stepFunctions:
             Type: Choice
             Choices:
               - Variable: $
-                StringEquals: Approved
+                StringEquals: ThumbsUp
+                # StringEquals: Approved
                 Next: Success
             Default: Failed
           Success:

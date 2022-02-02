@@ -50,3 +50,14 @@ aws stepfunctions send-task-failure --task-token "AAAAKgAAAAIAAAAAAAAAAZNDbjCrvy
 - Default Mode - Fire and forget ( just the resource name) - Immidiately returns as soon as it gets success from AWS API.
 - Sync mode (add .sync at the end of the resource) -> Synchronous. Root needs to wait for whole completion of nested state machine which is (1+3+5) = 9 minutes. _Failure of nested state machine also fails the root state machine._
 - Async with callback (add .waitForTaskToken) -> I can return from the nested state whenever I want via call back. Hence, I can design my statemachine in a way that root invokes nested and waits for token, from nested state machine, after finishing step B, we invoke root with a call back token and afte that root and nested states continue parallelly.
+
+# sfn best practice -
+
+- Always use timeout, specially when you have an activity!
+- Three ways to set timeout ->
+  - At the top level, whole state machine timeout.
+  - Task state can also have a timeout
+  - Input can be max of size 2KB, larger than that use s3.
+  - Retry AWS api exeception such as Lambda.Service,Lambda.AWSLambdaException,Lambda.sdkClientException exception
+  - Scale number of pollers for activity.
+  - Implement cloudwatch alarm based on Execution(s)(TimedOut,Failed,Aborted, Throttled, Successded, Started, Time).
