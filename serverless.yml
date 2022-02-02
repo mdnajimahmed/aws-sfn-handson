@@ -373,7 +373,7 @@ stepFunctions:
         States:
           Wait:
             Type: Wait
-            Seconds: 3
+            Seconds: 300
             # End: True
             Next: InvokeLambda
           InvokeLambda:
