@@ -55,9 +55,15 @@ aws stepfunctions send-task-failure --task-token "AAAAKgAAAAIAAAAAAAAAAZNDbjCrvy
 
 - Always use timeout, specially when you have an activity!
 - Three ways to set timeout ->
+
   - At the top level, whole state machine timeout.
   - Task state can also have a timeout
   - Input can be max of size 2KB, larger than that use s3.
   - Retry AWS api exeception such as Lambda.Service,Lambda.AWSLambdaException,Lambda.sdkClientException exception
   - Scale number of pollers for activity.
   - Implement cloudwatch alarm based on Execution(s)(TimedOut,Failed,Aborted, Throttled, Successded, Started, Time).
+  - Explicitely set TimeoutSeconds param on task, default is 60. If the task needs more time then Explicitely define it. Match is with lambda timeout.
+
+  # Next step
+
+- Read the documentation and do more hands on using the examples in the documentation. The combination of lambda and SFN seems to have GOD level power.
